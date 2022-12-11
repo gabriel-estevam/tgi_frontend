@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controle de Estoque</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../dist/css/switch.css?v1">
+  <link rel="stylesheet" href="../dist/css/toast.css">
+  <script src="../dist/js/main.js?v2"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="call_toast"></div>
+<div class="wrapper">
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Gestão de Filiais</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Gerenciamento das Filiais</h3>
+                <button type="button" data-toggle="modal" data-target="#exampleModalCenter" class="btn btn-sm btn-primary float-right">Adicionar Novo Produto</button>
+              </div>
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                        <th class="dt-center">Status</th>
+                        <th class="dt-center">Produto</th>
+                        <th class="dt-center">Unidade de medida</th>
+                        <th class="dt-center">Ações</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+						<th class="dt-center">Status</th>
+                        <th class="dt-center">Produto</th>
+                        <th class="dt-center">Unidade de medida</th>
+                        <th class="dt-center">Ações</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+</div>
+
+<!-- Modal para inserir -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">Adicionar Novo Produto</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form method="post" enctype="multipart/form-data">
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-12">
+							<label>Produto</label>
+							<input type="text" class="form-control" name="nome" id="nome" placeholder="Produto">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6">
+							<label>Unidade de Medida</label>
+							<select class="form-control" name="fk_unidade_medida" id="fk_unidade_medida"></select>
+						</div>
+						<div class="col-6">
+							<label>Produto Ativo?</label>
+							<br>
+							<label class="switch">
+								<input type="checkbox" name="produto_ativo" id="produto_ativo" checked>
+								<span class="slider round"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+					<button onclick="insere()" class="btn btn-primary btn-mini">Adicionar Produto</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- Modal para atualizar -->
+<div class="modal fade" id="modalAtualizar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">Atualizar Produto</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form method="post" enctype="multipart/form-data">
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-12">
+							<label>Produto</label>
+							<input type="text" class="form-control" name="nome_atualizar" id="nome_atualizar" placeholder="Produto">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6">
+							<label>Unidade de Medida</label>
+							<select class="form-control" name="fk_unidade_medida_atualizar" id="fk_unidade_medida_atualizar"></select>
+						</div>
+						<div class="col-6">
+							<label>Produto Ativo?</label>
+							<br>
+							<label class="switch">
+								<input type="checkbox" name="produto_ativo_atualizar" id="produto_ativo_atualizar" checked>
+								<span class="slider round"></span>
+							</label>
+						</div>
+					</div>
+					<input type="text" name="id_atualizar" id="id_atualizar" hidden>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+					<button onclick="atualizar()" class="btn btn-primary btn-mini">Atualizar Produto</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- Modal para Deletar -->
+<div class="modal fade" id="modalDeletar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">Deletar Produto</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form method="post" enctype="multipart/form-data">
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-12">
+							<label>DIGITE 'CONFIRMAR' SE DESEJA DELETAR ESSE REGISTRO.(Essa ação é irreversível)</label>
+							<br>
+							<input type="text" class="form-control" id="confirmar" name="confirmar" placeholder="CONFIRMAR">
+						</div>
+					</div>
+				</div>
+				<input type="text" name="id_deletar" id="id_deletar" hidden>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+					<button onclick="apagar()" class="btn btn-danger btn-mini">Deletar Produto</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script src="../plugins/jquery/jquery.min.js"></script>
+<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="../plugins/jszip/jszip.min.js"></script>
+<script src="../plugins/pdfmake/pdfmake.min.js"></script>
+<script src="../plugins/pdfmake/vfs_fonts.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="../dist/js/adminlte.min.js"></script>
+<script src="../dist/js/demo.js"></script>
+<script src="../plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<script>
+
+	// Função para listar os produtos na tabela e configurações da tabela
+	$(function () {
+		var token = localStorage.getItem('token')
+		var settings = {
+			"url": "http://localhost/tgi_backend/api/produto",
+			"method": "GET",
+			"timeout": 0,
+			"headers": {
+			"token": token
+			},
+		};
+		$.ajax(settings).done(function (response) {
+			var dados = response.data;
+			dados.forEach(item => {
+				if(item.produto_ativo == 1){
+					item.produto_ativo = "<button type='button' class='btn btn-success'>Ativa</button>";
+				} else {
+					item.produto_ativo = "<button type='button' class='btn btn-danger'>Inativa</button>";
+				}
+			});
+			$("#example1").DataTable({
+				data: dados,
+				columns: [
+					{ "data": "produto_ativo", className: "dt-center" },
+					{ "data": "nome", className: "dt-center" },
+					{ "data": "unidade_medida", className: "dt-center"  },
+					{
+						"data": "id", className: "dt-center",
+						render:function(data, type, row)
+						{
+						return "<button class='btn btn-warning' onclick='atualizaModal(" + data + ")'>Atualizar</button>   <button class='btn btn-danger' onclick='apagaModal(" + data + ")'>Deletar</button>";
+						}
+					}
+				],
+				"responsive": true, 
+				"lengthChange": false, 
+				"autoWidth": false,
+				"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+				"language": {
+					"emptyTable": "Nenhum registro encontrado",
+					"info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+					"infoEmpty": "Mostrando 0 até 0 de 0 registros",
+					"infoFiltered": "(Filtrados de _MAX_ registros)",
+					"infoThousands": ".",
+					"loadingRecords": "Carregando...",
+					"processing": "Processando...",
+					"zeroRecords": "Nenhum registro encontrado",
+					"search": "Pesquisar",
+					"paginate": {
+						"next": "Próximo",
+						"previous": "Anterior",
+						"first": "Primeiro",
+						"last": "Último"
+					},
+					"aria": {
+						"sortAscending": ": Ordenar colunas de forma ascendente",
+						"sortDescending": ": Ordenar colunas de forma descendente"
+					},
+					"select": {
+						"rows": {
+							"_": "Selecionado %d linhas",
+							"1": "Selecionado 1 linha"
+						},
+						"cells": {
+							"1": "1 célula selecionada",
+							"_": "%d células selecionadas"
+						},
+						"columns": {
+							"1": "1 coluna selecionada",
+							"_": "%d colunas selecionadas"
+						}
+					},
+					"buttons": {
+						"copySuccess": {
+							"1": "Uma linha copiada com sucesso",
+							"_": "%d linhas copiadas com sucesso"
+						},
+						"collection": "Coleção  <span class=\"ui-button-icon-primary ui-icon ui-icon-triangle-1-s\"><\/span>",
+						"colvis": "Visibilidade da Coluna",
+						"colvisRestore": "Restaurar Visibilidade",
+						"copy": "Copiar",
+						"copyKeys": "Pressione ctrl ou u2318 + C para copiar os dados da tabela para a área de transferência do sistema. Para cancelar, clique nesta mensagem ou pressione Esc..",
+						"copyTitle": "Copiar para a Área de Transferência",
+						"csv": "CSV",
+						"excel": "Excel",
+						"pageLength": {
+							"-1": "Mostrar todos os registros",
+							"_": "Mostrar %d registros"
+						},
+						"pdf": "PDF",
+						"print": "Imprimir",
+						"createState": "Criar estado",
+						"removeAllStates": "Remover todos os estados",
+						"removeState": "Remover",
+						"renameState": "Renomear",
+						"savedStates": "Estados salvos",
+						"stateRestore": "Estado %d",
+						"updateState": "Atualizar"
+					},
+					"autoFill": {
+						"cancel": "Cancelar",
+						"fill": "Preencher todas as células com",
+						"fillHorizontal": "Preencher células horizontalmente",
+						"fillVertical": "Preencher células verticalmente"
+					},
+					"lengthMenu": "Exibir _MENU_ resultados por página",
+					"searchBuilder": {
+						"add": "Adicionar Condição",
+						"button": {
+							"0": "Construtor de Pesquisa",
+							"_": "Construtor de Pesquisa (%d)"
+						},
+						"clearAll": "Limpar Tudo",
+						"condition": "Condição",
+						"conditions": {
+							"date": {
+								"after": "Depois",
+								"before": "Antes",
+								"between": "Entre",
+								"empty": "Vazio",
+								"equals": "Igual",
+								"not": "Não",
+								"notBetween": "Não Entre",
+								"notEmpty": "Não Vazio"
+							},
+							"number": {
+								"between": "Entre",
+								"empty": "Vazio",
+								"equals": "Igual",
+								"gt": "Maior Que",
+								"gte": "Maior ou Igual a",
+								"lt": "Menor Que",
+								"lte": "Menor ou Igual a",
+								"not": "Não",
+								"notBetween": "Não Entre",
+								"notEmpty": "Não Vazio"
+							},
+							"string": {
+								"contains": "Contém",
+								"empty": "Vazio",
+								"endsWith": "Termina Com",
+								"equals": "Igual",
+								"not": "Não",
+								"notEmpty": "Não Vazio",
+								"startsWith": "Começa Com",
+								"notContains": "Não contém",
+								"notStarts": "Não começa com",
+								"notEnds": "Não termina com"
+							},
+							"array": {
+								"contains": "Contém",
+								"empty": "Vazio",
+								"equals": "Igual à",
+								"not": "Não",
+								"notEmpty": "Não vazio",
+								"without": "Não possui"
+							}
+						},
+						"data": "Data",
+						"deleteTitle": "Excluir regra de filtragem",
+						"logicAnd": "E",
+						"logicOr": "Ou",
+						"title": {
+							"0": "Construtor de Pesquisa",
+							"_": "Construtor de Pesquisa (%d)"
+						},
+						"value": "Valor",
+						"leftTitle": "Critérios Externos",
+						"rightTitle": "Critérios Internos"
+					},
+					"searchPanes": {
+						"clearMessage": "Limpar Tudo",
+						"collapse": {
+							"0": "Painéis de Pesquisa",
+							"_": "Painéis de Pesquisa (%d)"
+						},
+						"count": "{total}",
+						"countFiltered": "{shown} ({total})",
+						"emptyPanes": "Nenhum Painel de Pesquisa",
+						"loadMessage": "Carregando Painéis de Pesquisa...",
+						"title": "Filtros Ativos",
+						"showMessage": "Mostrar todos",
+						"collapseMessage": "Fechar todos"
+					},
+					"thousands": ".",
+					"datetime": {
+						"previous": "Anterior",
+						"next": "Próximo",
+						"hours": "Hora",
+						"minutes": "Minuto",
+						"seconds": "Segundo",
+						"amPm": [
+							"am",
+							"pm"
+						],
+						"unknown": "-",
+						"months": {
+							"0": "Janeiro",
+							"1": "Fevereiro",
+							"10": "Novembro",
+							"11": "Dezembro",
+							"2": "Março",
+							"3": "Abril",
+							"4": "Maio",
+							"5": "Junho",
+							"6": "Julho",
+							"7": "Agosto",
+							"8": "Setembro",
+							"9": "Outubro"
+						},
+						"weekdays": [
+							"Domingo",
+							"Segunda-feira",
+							"Terça-feira",
+							"Quarta-feira",
+							"Quinte-feira",
+							"Sexta-feira",
+							"Sábado"
+						]
+					},
+					"editor": {
+						"close": "Fechar",
+						"create": {
+							"button": "Novo",
+							"submit": "Criar",
+							"title": "Criar novo registro"
+						},
+						"edit": {
+							"button": "Editar",
+							"submit": "Atualizar",
+							"title": "Editar registro"
+						},
+						"error": {
+							"system": "Ocorreu um erro no sistema (<a target=\"\\\" rel=\"nofollow\" href=\"\\\">Mais informações<\/a>)."
+						},
+						"multi": {
+							"noMulti": "Essa entrada pode ser editada individualmente, mas não como parte do grupo",
+							"restore": "Desfazer alterações",
+							"title": "Multiplos valores",
+							"info": "Os itens selecionados contêm valores diferentes para esta entrada. Para editar e definir todos os itens para esta entrada com o mesmo valor, clique ou toque aqui, caso contrário, eles manterão seus valores individuais."
+						},
+						"remove": {
+							"button": "Remover",
+							"confirm": {
+								"_": "Tem certeza que quer deletar %d linhas?",
+								"1": "Tem certeza que quer deletar 1 linha?"
+							},
+							"submit": "Remover",
+							"title": "Remover registro"
+						}
+					},
+					"decimal": ",",
+					"stateRestore": {
+						"creationModal": {
+							"button": "Criar",
+							"columns": {
+								"search": "Busca de colunas",
+								"visible": "Visibilidade da coluna"
+							},
+							"name": "Nome:",
+							"order": "Ordernar",
+							"paging": "Paginação",
+							"scroller": "Posição da barra de rolagem",
+							"search": "Busca",
+							"searchBuilder": "Mecanismo de busca",
+							"select": "Selecionar",
+							"title": "Criar novo estado",
+							"toggleLabel": "Inclui:"
+						},
+						"duplicateError": "Já existe um estado com esse nome",
+						"emptyError": "Não pode ser vazio",
+						"emptyStates": "Nenhum estado salvo",
+						"removeConfirm": "Confirma remover %s?",
+						"removeError": "Falha ao remover estado",
+						"removeJoiner": "e",
+						"removeSubmit": "Remover",
+						"removeTitle": "Remover estado",
+						"renameButton": "Renomear",
+						"renameLabel": "Novo nome para %s:",
+						"renameTitle": "Renomear estado"
+					}
+			}
+			}).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+			$('#example2').DataTable({
+			"paging": true,
+			"lengthChange": true,
+			"searching": true,
+			"ordering": false,
+			"info": true,
+			"autoWidth": false,
+			"responsive": true,
+			});
+		})
+	});
+	
+// Função para buscar as unidades de medida e listar no modal
+
+var token = localStorage.getItem('token')
+var settings = {
+	"url": "http://localhost/tgi_backend/api/unidadeMedida",
+	"method": "GET",
+	"timeout": 0,
+	"headers": {
+		"token": token
+	},
+};
+
+$.ajax(settings).done(function (response) {
+	data = response.data
+	for(let i=0;i<data.length;++i){
+		$("#fk_unidade_medida").append("<option value=" + data[i].id + ">" + data[i].unidade_medida + "</option>");
+	}
+});
+
+// Função para inserir registro do BD
+function insere() {
+	var produto_ativo = 1
+	if ($("#produto_ativo").is(":checked")) {
+    	produto_ativo = 1
+	} else {
+		produto_ativo = 0
+	}
+	produto_deletado = 0
+	var nome = $("#nome").val();
+	var fk_unidade_medida = $("#fk_unidade_medida").val();
+
+	var form = new FormData();
+
+	form.append("nome", nome);
+	form.append("produto_ativo", produto_ativo);
+	form.append("fk_unidade_medida", fk_unidade_medida);
+	form.append("produto_deletado", produto_deletado);
+
+	var token = localStorage.getItem('token')
+
+	var settings = {
+		"url": "http://localhost/tgi_backend/api/produto",
+		"method": "POST",
+		"timeout": 0,
+		"headers": {
+			"token": token
+		},
+		"processData": false,
+		"mimeType": "multipart/form-data",
+		"contentType": false,
+		"data": form
+	};
+
+	$.ajax(settings).done(function (response) {
+		window.alert('Produto inserido com sucesso!')
+		// 	window.location.reload(true) //Atualiza a pagina apos inserir um registro
+	});
+}
+
+// Função para trazer os registros do BD para o Modal
+function atualizaModal(id){
+	$("#modalAtualizar").modal();
+	var token = localStorage.getItem('token')
+	var form = new FormData();
+	var settings = {
+		"url": "http://localhost/tgi_backend/api/produto/" + id,
+		"method": "GET",
+		"timeout": 0,
+		"headers": {
+			"token": token
+		},
+		"processData": false,
+		"mimeType": "multipart/form-data",
+		"contentType": false,
+		"data": form
+	};
+
+	$.ajax(settings).done(function (response) {
+		const resJson = JSON.parse(response);
+		dados = (resJson.data);
+		if(dados['produto_ativo'] == 1){
+			$('#produto_ativo_atualizar').prop('checked', true);
+		} else {
+			$('#produto_ativo_atualizar').prop('checked', false);
+		}
+
+		jQuery('#produto_ativo_atualizar').val(0);
+		jQuery('#nome_atualizar').val(dados['nome']);
+		jQuery('#id_atualizar').val(id);
+
+		var settings = {
+			"url": "http://localhost/tgi_backend/api/unidadeMedida",
+			"method": "GET",
+			"timeout": 0,
+			"headers": {
+				"token": token
+			},
+		};
+
+		$.ajax(settings).done(function (response) {
+			data = response.data
+			$('#fk_unidade_medida_atualizar option').remove();
+			for(let i=0;i<data.length;++i){
+				if(dados['id'] == data[i].id){
+					$("#fk_unidade_medida_atualizar").append("<option value=" + data[i].id + " selected>" + data[i].unidade_medida + "</option>");
+				} else {
+					$("#fk_unidade_medida_atualizar").append("<option value=" + data[i].id + ">" + data[i].unidade_medida + "</option>");
+				}
+			}
+		});
+	});
+}
+
+// Função para atualizar o registro no BD
+function atualizar(){
+	var produto_ativo_atualizar = 1
+	if ($("#produto_ativo_atualizar").is(":checked")) {
+		produto_ativo_atualizar = 1
+	} else {
+		produto_ativo_atualizar = 0
+	}
+	produto_deletado = 0
+	var nome_atualizar = $("#nome_atualizar").val();
+	var fk_unidade_medida_atualizar = $("#fk_unidade_medida_atualizar").val();
+	var id = $("#id_atualizar").val();
+
+	var settings = {
+		"url": "http://localhost/tgi_backend/api/produto/" + id,
+		"method": "POST",
+		"timeout": 0,
+		"headers": {
+			"token": token,
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
+		"data": {
+			"nome": nome_atualizar,
+			"fk_unidade_medida": fk_unidade_medida_atualizar,
+			"produto_ativo": produto_ativo_atualizar,
+			"produto_deletado": produto_deletado,
+		}
+    };
+
+    $.ajax(settings).done(function (response) {
+		window.alert("Ação realizada com sucesso.")
+		// window.location.reload(true) //Atualiza a pagina apos atualizar um registro
+    });
+
+}
+
+// Função para confirmar a exclusão do registro do BD
+function apagaModal(id){
+	$("#modalDeletar").modal();
+	jQuery('#id_deletar').val(id);
+}
+
+// Função para apagar o registro no BD
+function apagar(){
+	var confirmar = $("#confirmar").val();
+	var id = $("#id_deletar").val();
+	if(confirmar == 'CONFIRMAR'){
+		var settings = {
+			"url": "http://localhost/tgi_backend/api/produto/" + id,
+			"method": "DELETE",
+			"timeout": 0,
+			"headers": {
+				"token": token
+			},
+		};
+		$.ajax(settings).done(function (response) {
+			window.alert("Ação realizada com sucesso.")
+		});
+	} else {
+		window.alert("Ação cancelada, confirmação não realizada.")
+	}
+}
+
+</script>
+</body>
+</html>

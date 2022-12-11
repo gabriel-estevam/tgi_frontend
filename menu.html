@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controle de Estoque</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="./dist/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./dist/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./dist/img/favicon-16x16.png">
+  <link rel="manifest" href="./dist/img/site.webmanifest">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <script src="dist/js/main.js"></script>
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed" data-panel-auto-height-mode="height" onload="callMenu()">
+  <div class="wrapper">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <button onclick="homeSystem()" style="border: none; background: none;" class="nav-link">Home</button>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <button onclick="exitSystem()" style="border: none; background: none;" title="Fazer Logout" class="nav-link">
+            <i class="fas fa-sign-in-alt"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <div id="menu"></div>
+    </aside>
+
+    <div class="content-wrapper iframe-mode" data-widget="iframe" data-loading-screen="750">
+      <div class="nav navbar navbar-expand navbar-white navbar-light border-bottom p-0">
+        <div class="nav-item dropdown">
+          <a class="nav-link bg-danger dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+            aria-haspopup="true" aria-expanded="false">Fechar Abas</a>
+          <div class="dropdown-menu mt-0">
+            <a class="dropdown-item" href="#" data-widget="iframe-close" data-type="all">Fechar Todos</a>
+          </div>
+        </div>
+        <ul class="navbar-nav overflow-hidden" role="tablist"></ul>
+        <a class="nav-link bg-light" href="#" data-widget="iframe-fullscreen"><i class="fas fa-expand"></i></a>
+      </div>
+      <div class="tab-content">
+        <div class="tab-empty">
+          <img src="dist/img/bg.png" alt="Salto Logo" class="display-12">
+        </div>
+        <div class="tab-loading">
+          <div>
+            <h2 class="display-4">Carregando Página <i class="fa fa-sync fa-spin"></i></h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="main-footer">
+      <!--- <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
+    All rights reserved. -->
+      <div class="float-right d-none d-sm-inline-block">
+        <!--- <b>Version</b> 3.2.0 -->
+      </div>
+    </footer>
+    <aside class="control-sidebar control-sidebar-dark"></aside>
+  </div>
+  <script src="plugins/jquery/jquery.min.js"></script>
+  <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
+  <script>
+    function formatarDataHora() {
+      const data = new Date();
+      const dia = String(data.getDate()).padStart(2, '0');
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const ano = data.getFullYear();
+      const horas = data.getHours();
+      const minutos = data.getMinute();
+      const segundos = String(data.getSeconds()).padStart(2, '0');
+
+      let dataHoraAtual = `${ano}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+      return dataHoraAtual;
+    }
+
+    let payload = userInfo();
+    let dataHoraLocal = formatarDataHora();
+    if (payload.expiracao_token == dataHoraLocal) {
+      window.alert("TOKEN NÃO ENVIADO!! Faça login novamente");
+      exitSystem();
+    }
+
+    $.widget.bridge('uibutton', $.ui.button)
+  </script>
+  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+  <script src="dist/js/adminlte.js"></script>
+  <script src="dist/js/demo.js"></script>
+</body>
+
+</html>

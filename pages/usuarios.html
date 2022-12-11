@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Controle de Estoque</title>
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+	<link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+	<link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+	<link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+	<link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+	<link rel="stylesheet" href="../dist/css/adminlte.min.css">
+	<link rel="stylesheet" href="../dist/css/switch.css?v1">
+	<link rel="stylesheet" href="../dist/css/toast.css">
+	<script src="../dist/js/main.js?v2"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"
+		type="text/javascript"></script>
+</head>
+
+<body>
+	<div id="call_toast"></div>
+	<div class="wrapper">
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>Gestão de Usuários</h1>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-header">
+								<h3 class="card-title">Gerenciamento dos Usuários</h3>
+								<button type="button" data-toggle="modal" data-target="#exampleModalCenter"
+									class="btn btn-sm btn-primary float-right">Adicionar Novo Usuário</button>
+							</div>
+							<div class="card-body">
+								<table id="example1" class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th class="dt-center">Status</th>
+											<th class="dt-center">Nome</th>
+											<th class="dt-center">Login</th>
+											<th class="dt-center">Nível de Acesso</th>
+											<th class="dt-center">Unidade de negócio</th>
+											<th class="dt-center">Ações</th>
+										</tr>
+									</thead>
+									<tfoot>
+										<tr>
+											<th class="dt-center">Status</th>
+											<th class="dt-center">Nome</th>
+											<th class="dt-center">Login</th>
+											<th class="dt-center">Nível de Acesso</th>
+											<th class="dt-center">Unidade de negócio</th>
+											<th class="dt-center">Ações</th>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<!-- Modal para inserir -->
+	<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalCenterTitle">Adicionar Novo Usuário</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form method="post" enctype="multipart/form-data">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-6">
+								<label>Usuário Ativo</label>
+								<br>
+								<label class="switch">
+									<input type="checkbox" name="usuario_ativo" id="usuario_ativo" checked required>
+									<span class="slider round"></span>
+								</label>
+							</div>
+							<div class="col-6">
+								<label>Nome</label>
+								<input type="text" class="form-control" name="nome" id="nome" placeholder="Nome"
+									required>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<label>Login</label>
+								<input type="email" class="form-control" name="login" id="login" placeholder="Login"
+									required>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6">
+								<label>Nível de Acesso</label>
+								<select name="nivel_acesso" id="nivel_acesso" class="form-control">
+									<option value="0">Usuário</option>
+									<option value="1">Administrador</option>
+								</select>
+							</div>
+							<div class="col-6">
+								<label>Unidade</label>
+								<select class="form-control" name="fk_unidade_negocio" id="fk_unidade_negocio"></select>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6">
+								<label>Senha</label>
+								<input type="password" class="form-control" id="password" name="password"
+									placeholder="Senha" required>
+							</div>
+							<div class="col-6">
+								<label>Confirme a Senha</label>
+								<input type="password" class="form-control" id="password_confirm"
+									name="password_confirm" placeholder="Confirme a Senha" required>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+						<button onclick="insere()" class="btn btn-primary btn-mini">Adicionar Usuário</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para atualizar -->
+	<div class="modal fade" id="modalAtualizar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalCenterTitle">Atualizar Usuário</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form method="post" enctype="multipart/form-data">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-6">
+								<label>Usuário Ativo</label>
+								<br>
+								<label class="switch">
+									<input type="checkbox" name="usuario_ativo_atualizar" id="usuario_ativo_atualizar">
+									<span class="slider round"></span>
+								</label>
+							</div>
+							<div class="col-6">
+								<label>Nome</label>
+								<input type="text" class="form-control" name="nome_atualizar" id="nome_atualizar"
+									placeholder="Nome">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<label>Login</label>
+								<input type="email" class="form-control" name="login_atualizar" id="login_atualizar"
+									placeholder="Login">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6">
+								<label>Nível de Acesso</label>
+								<select name="nivel_acesso_atualizar" id="nivel_acesso_atualizar"
+									class="form-control"></select>
+							</div>
+							<div class="col-6">
+								<label>Unidade</label>
+								<select class="form-control" name="fk_unidade_negocio_atualizar"
+									id="fk_unidade_negocio_atualizar"></select>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6">
+								<label>Senha</label>
+								<input type="password" class="form-control" id="password_atualizar"
+									name="password_atualizar" onchange="confereSenhaUpdate();" placeholder="Senha">
+							</div>
+							<div class="col-6">
+								<label>Confirme a Senha</label>
+								<input type="password" class="form-control" id="password_confirm_atualizar"
+									name="password_confirm_atualizar" onchange="confereSenhaUpdate();"
+									placeholder="Confirme a Senha">
+							</div>
+						</div>
+					</div>
+					<input type="text" name="id_atualizar" id="id_atualizar" hidden>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+						<button onclick="atualizar()" class="btn btn-warning btn-mini">Atualizar Usuário</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para Deletar -->
+	<div class="modal fade" id="modalDeletar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalCenterTitle">Deletar Usuário</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form method="post" enctype="multipart/form-data">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-12">
+								<label>DIGITE 'CONFIRMAR' SE DESEJA DELETAR ESSE REGISTRO.(Essa ação é
+									irreversível)</label>
+								<br>
+								<input type="text" class="form-control" id="confirmar" name="confirmar"
+									placeholder="CONFIRMAR">
+							</div>
+						</div>
+					</div>
+					<input type="text" name="id_deletar" id="id_deletar" hidden>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+						<button onclick="apagar()" class="btn btn-danger btn-mini">Deletar Usuário</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script src="../plugins/jquery/jquery.min.js"></script>
+	<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+	<script src="../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+	<script src="../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+	<script src="../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+	<script src="../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+	<script src="../plugins/jszip/jszip.min.js"></script>
+	<script src="../plugins/pdfmake/pdfmake.min.js"></script>
+	<script src="../plugins/pdfmake/vfs_fonts.js"></script>
+	<script src="../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+	<script src="../plugins/datatables-buttons/js/buttons.print.min.js"></script>
+	<script src="../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+	<script src="../dist/js/adminlte.min.js"></script>
+	<script src="../dist/js/demo.js"></script>
+	<script src="../plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+	<script>
+		function userInfo() {
+			var token = localStorage.getItem('token')
+			var base64Url = token.split('.')[1];
+			var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+			var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+				return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+			}).join(''));
+			valueJson = JSON.parse(jsonPayload);
+			console.log(valueJson.id)
+		}
+		userInfo()
+		// Função para listar os usuários na tabela e configurações da tabela
+		$(function () {
+			var token = localStorage.getItem('token')
+			var settings = {
+				"url": "http://localhost/tgi_backend/api/usuario",
+				"method": "GET",
+				"timeout": 0,
+				"headers": {
+					"token": token
+				},
+			};
+			$.ajax(settings).done(function (response) {
+				var dados = response.data;
+				dados.forEach(item => {
+					if (item.usuario_ativo == 1) {
+						item.usuario_ativo = "<button type='button' class='btn btn-success'>Ativo</button>";
+					} else {
+						item.usuario_ativo = "<button type='button' class='btn btn-danger'>Inativo</button>";
+					}
+				});
+				dados.forEach(item => {
+					if (item.nivel_acesso == 1) {
+						item.nivel_acesso = "Administrador";
+					} else {
+						item.nivel_acesso = "Usuário";
+					}
+				});
+				$("#example1").DataTable({
+					data: dados,
+					columns: [
+						{ "data": "usuario_ativo", className: "dt-center" },
+						{ "data": "nome", className: "dt-center" },
+						{ "data": "login", className: "dt-center" },
+						{ "data": "nivel_acesso", className: "dt-center" },
+						{ "data": "unidade_negocio", className: "dt-center" },
+						{
+							"data": "id", className: "dt-center",
+							render: function (data, type, row) {
+								return "<button class='btn btn-warning' onclick='atualizaModal(" + data + ")'>Atualizar</button>   <button class='btn btn-danger' onclick='apagaModal(" + data + ")'>Deletar</button>";
+							}
+						}
+					],
+					"responsive": true,
+					"lengthChange": false,
+					"autoWidth": false,
+					"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+					"language": {
+						"emptyTable": "Nenhum registro encontrado",
+						"info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+						"infoEmpty": "Mostrando 0 até 0 de 0 registros",
+						"infoFiltered": "(Filtrados de _MAX_ registros)",
+						"infoThousands": ".",
+						"loadingRecords": "Carregando...",
+						"processing": "Processando...",
+						"zeroRecords": "Nenhum registro encontrado",
+						"search": "Pesquisar",
+						"paginate": {
+							"next": "Próximo",
+							"previous": "Anterior",
+							"first": "Primeiro",
+							"last": "Último"
+						},
+						"aria": {
+							"sortAscending": ": Ordenar colunas de forma ascendente",
+							"sortDescending": ": Ordenar colunas de forma descendente"
+						},
+						"select": {
+							"rows": {
+								"_": "Selecionado %d linhas",
+								"1": "Selecionado 1 linha"
+							},
+							"cells": {
+								"1": "1 célula selecionada",
+								"_": "%d células selecionadas"
+							},
+							"columns": {
+								"1": "1 coluna selecionada",
+								"_": "%d colunas selecionadas"
+							}
+						},
+						"buttons": {
+							"copySuccess": {
+								"1": "Uma linha copiada com sucesso",
+								"_": "%d linhas copiadas com sucesso"
+							},
+							"collection": "Coleção  <span class=\"ui-button-icon-primary ui-icon ui-icon-triangle-1-s\"><\/span>",
+							"colvis": "Visibilidade da Coluna",
+							"colvisRestore": "Restaurar Visibilidade",
+							"copy": "Copiar",
+							"copyKeys": "Pressione ctrl ou u2318 + C para copiar os dados da tabela para a área de transferência do sistema. Para cancelar, clique nesta mensagem ou pressione Esc..",
+							"copyTitle": "Copiar para a Área de Transferência",
+							"csv": "CSV",
+							"excel": "Excel",
+							"pageLength": {
+								"-1": "Mostrar todos os registros",
+								"_": "Mostrar %d registros"
+							},
+							"pdf": "PDF",
+							"print": "Imprimir",
+							"createState": "Criar estado",
+							"removeAllStates": "Remover todos os estados",
+							"removeState": "Remover",
+							"renameState": "Renomear",
+							"savedStates": "Estados salvos",
+							"stateRestore": "Estado %d",
+							"updateState": "Atualizar"
+						},
+						"autoFill": {
+							"cancel": "Cancelar",
+							"fill": "Preencher todas as células com",
+							"fillHorizontal": "Preencher células horizontalmente",
+							"fillVertical": "Preencher células verticalmente"
+						},
+						"lengthMenu": "Exibir _MENU_ resultados por página",
+						"searchBuilder": {
+							"add": "Adicionar Condição",
+							"button": {
+								"0": "Construtor de Pesquisa",
+								"_": "Construtor de Pesquisa (%d)"
+							},
+							"clearAll": "Limpar Tudo",
+							"condition": "Condição",
+							"conditions": {
+								"date": {
+									"after": "Depois",
+									"before": "Antes",
+									"between": "Entre",
+									"empty": "Vazio",
+									"equals": "Igual",
+									"not": "Não",
+									"notBetween": "Não Entre",
+									"notEmpty": "Não Vazio"
+								},
+								"number": {
+									"between": "Entre",
+									"empty": "Vazio",
+									"equals": "Igual",
+									"gt": "Maior Que",
+									"gte": "Maior ou Igual a",
+									"lt": "Menor Que",
+									"lte": "Menor ou Igual a",
+									"not": "Não",
+									"notBetween": "Não Entre",
+									"notEmpty": "Não Vazio"
+								},
+								"string": {
+									"contains": "Contém",
+									"empty": "Vazio",
+									"endsWith": "Termina Com",
+									"equals": "Igual",
+									"not": "Não",
+									"notEmpty": "Não Vazio",
+									"startsWith": "Começa Com",
+									"notContains": "Não contém",
+									"notStarts": "Não começa com",
+									"notEnds": "Não termina com"
+								},
+								"array": {
+									"contains": "Contém",
+									"empty": "Vazio",
+									"equals": "Igual à",
+									"not": "Não",
+									"notEmpty": "Não vazio",
+									"without": "Não possui"
+								}
+							},
+							"data": "Data",
+							"deleteTitle": "Excluir regra de filtragem",
+							"logicAnd": "E",
+							"logicOr": "Ou",
+							"title": {
+								"0": "Construtor de Pesquisa",
+								"_": "Construtor de Pesquisa (%d)"
+							},
+							"value": "Valor",
+							"leftTitle": "Critérios Externos",
+							"rightTitle": "Critérios Internos"
+						},
+						"searchPanes": {
+							"clearMessage": "Limpar Tudo",
+							"collapse": {
+								"0": "Painéis de Pesquisa",
+								"_": "Painéis de Pesquisa (%d)"
+							},
+							"count": "{total}",
+							"countFiltered": "{shown} ({total})",
+							"emptyPanes": "Nenhum Painel de Pesquisa",
+							"loadMessage": "Carregando Painéis de Pesquisa...",
+							"title": "Filtros Ativos",
+							"showMessage": "Mostrar todos",
+							"collapseMessage": "Fechar todos"
+						},
+						"thousands": ".",
+						"datetime": {
+							"previous": "Anterior",
+							"next": "Próximo",
+							"hours": "Hora",
+							"minutes": "Minuto",
+							"seconds": "Segundo",
+							"amPm": [
+								"am",
+								"pm"
+							],
+							"unknown": "-",
+							"months": {
+								"0": "Janeiro",
+								"1": "Fevereiro",
+								"10": "Novembro",
+								"11": "Dezembro",
+								"2": "Março",
+								"3": "Abril",
+								"4": "Maio",
+								"5": "Junho",
+								"6": "Julho",
+								"7": "Agosto",
+								"8": "Setembro",
+								"9": "Outubro"
+							},
+							"weekdays": [
+								"Domingo",
+								"Segunda-feira",
+								"Terça-feira",
+								"Quarta-feira",
+								"Quinte-feira",
+								"Sexta-feira",
+								"Sábado"
+							]
+						},
+						"editor": {
+							"close": "Fechar",
+							"create": {
+								"button": "Novo",
+								"submit": "Criar",
+								"title": "Criar novo registro"
+							},
+							"edit": {
+								"button": "Editar",
+								"submit": "Atualizar",
+								"title": "Editar registro"
+							},
+							"error": {
+								"system": "Ocorreu um erro no sistema (<a target=\"\\\" rel=\"nofollow\" href=\"\\\">Mais informações<\/a>)."
+							},
+							"multi": {
+								"noMulti": "Essa entrada pode ser editada individualmente, mas não como parte do grupo",
+								"restore": "Desfazer alterações",
+								"title": "Multiplos valores",
+								"info": "Os itens selecionados contêm valores diferentes para esta entrada. Para editar e definir todos os itens para esta entrada com o mesmo valor, clique ou toque aqui, caso contrário, eles manterão seus valores individuais."
+							},
+							"remove": {
+								"button": "Remover",
+								"confirm": {
+									"_": "Tem certeza que quer deletar %d linhas?",
+									"1": "Tem certeza que quer deletar 1 linha?"
+								},
+								"submit": "Remover",
+								"title": "Remover registro"
+							}
+						},
+						"decimal": ",",
+						"stateRestore": {
+							"creationModal": {
+								"button": "Criar",
+								"columns": {
+									"search": "Busca de colunas",
+									"visible": "Visibilidade da coluna"
+								},
+								"name": "Nome:",
+								"order": "Ordernar",
+								"paging": "Paginação",
+								"scroller": "Posição da barra de rolagem",
+								"search": "Busca",
+								"searchBuilder": "Mecanismo de busca",
+								"select": "Selecionar",
+								"title": "Criar novo estado",
+								"toggleLabel": "Inclui:"
+							},
+							"duplicateError": "Já existe um estado com esse nome",
+							"emptyError": "Não pode ser vazio",
+							"emptyStates": "Nenhum estado salvo",
+							"removeConfirm": "Confirma remover %s?",
+							"removeError": "Falha ao remover estado",
+							"removeJoiner": "e",
+							"removeSubmit": "Remover",
+							"removeTitle": "Remover estado",
+							"renameButton": "Renomear",
+							"renameLabel": "Novo nome para %s:",
+							"renameTitle": "Renomear estado"
+						}
+					}
+				}).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+				$('#example2').DataTable({
+					"paging": true,
+					"lengthChange": true,
+					"searching": true,
+					"ordering": false,
+					"info": true,
+					"autoWidth": false,
+					"responsive": true,
+				});
+			})
+		});
+
+		// Função para buscar as unidades de negócio e listar no modal
+		var token = localStorage.getItem('token')
+		var settings = {
+			"url": "http://localhost/tgi_backend/api/unidade",
+			"method": "GET",
+			"timeout": 0,
+			"headers": {
+				"token": token
+			},
+		};
+
+		$.ajax(settings).done(function (response) {
+			data = response.data
+			const filtro = data.filter(item => item.unidade_negocio_ativo > 0)
+			for (let i = 0; i < filtro.length; ++i) {
+				$("#fk_unidade_negocio").append("<option value=" + filtro[i].id_unidade_negocio + ">" + filtro[i].nome_unidade_negocio + "</option>");
+			}
+		});
+
+		// Função para inserir registro do BD
+		function insere() {
+			var usuario_ativo = 1
+			if ($("#usuario_ativo").is(":checked")) {
+				usuario_ativo = 1
+			} else {
+				usuario_ativo = 0
+			}
+			if ($("#nome").val() != '' && $("#login").val() != '' && $("#password").val() != '' && $("#password_confirm").val() != '') {
+
+				var nome = $("#nome").val();
+				var login = $("#login").val();
+				var nivel_acesso = $("#nivel_acesso").val();
+				var fk_unidade_negocio = $("#fk_unidade_negocio").val();
+				var password = $("#password").val();
+				var password_confirm = document.querySelector('#password_confirm');
+
+				if (password_confirm.value === password) {
+
+					var form = new FormData();
+					form.append("nome", nome);
+					form.append("login", login.toLowerCase());
+					form.append("senha", password);
+					form.append("nivel_acesso", nivel_acesso);
+					form.append("usuario_ativo", usuario_ativo);
+					form.append("fk_unidade_negocio", fk_unidade_negocio);
+
+					var token = localStorage.getItem('token')
+
+					var settings = {
+						"url": "http://localhost/tgi_backend/api/usuario",
+						"method": "POST",
+						"timeout": 0,
+						"headers": {
+							"token": token
+						},
+						"processData": false,
+						"mimeType": "multipart/form-data",
+						"contentType": false,
+						"data": form
+					};
+
+					$.ajax(settings).done(function (response) {
+						window.alert('Usuário inserido com sucesso!')
+						window.location.reload(true) //atualiza a pagina apos inserir um registro
+					});
+				}
+				else {
+					password_confirm.setCustomValidity('As senhas não conferem')
+				}
+			}
+			else {
+				window.alert('Preencha todos os campos!!!')
+			}
+		}
+
+		// Função para trazer os registros do BD para o Modal
+		function atualizaModal(id) {
+			$("#modalAtualizar").modal();
+			var token = localStorage.getItem('token')
+			var form = new FormData();
+			var settings = {
+				"url": "http://localhost/tgi_backend/api/usuario/" + id,
+				"method": "GET",
+				"timeout": 0,
+				"headers": {
+					"token": token
+				},
+				"processData": false,
+				"mimeType": "multipart/form-data",
+				"contentType": false,
+				"data": form
+			};
+
+			$.ajax(settings).done(function (response) {
+				const resJson = JSON.parse(response);
+				dados = (resJson.data);
+				if (dados['usuario_ativo'] == 1) {
+					$('#usuario_ativo_atualizar').prop('checked', true);
+				} else {
+					$('#usuario_ativo_atualizar').prop('checked', false);
+				}
+				jQuery('#usuario_ativo_atualizar').val(0);
+				jQuery('#nome_atualizar').val(dados['nome']);
+				jQuery('#login_atualizar').val(dados['login']);
+				jQuery('#id_atualizar').val(id);
+				if (dados['nivel_acesso'] == 1) {
+					nv_acesso = 'Administrador';
+					nv_acesso_modal = 'Usuário';
+				} else {
+					nv_acesso = 'Usuário';
+					nv_acesso_modal = 'Administrador';
+				}
+				if ($('#nivel_acesso_atualizar option').length < 2) {
+					$("#nivel_acesso_atualizar").append("<option value=" + dados['nivel_acesso'] + " selected>" + nv_acesso + "</option>");
+					$("#nivel_acesso_atualizar").append("<option value=" + dados['nivel_acesso'] + ">" + nv_acesso_modal + "</option>");
+				} else {
+					$('#nivel_acesso_atualizar option').remove();
+					$("#nivel_acesso_atualizar").append("<option value=" + dados['nivel_acesso'] + " selected>" + nv_acesso + "</option>");
+					$("#nivel_acesso_atualizar").append("<option value=" + dados['nivel_acesso'] + ">" + nv_acesso_modal + "</option>");
+				}
+
+				var settings = {
+					"url": "http://localhost/tgi_backend/api/unidade",
+					"method": "GET",
+					"timeout": 0,
+					"headers": {
+						"token": token
+					},
+				};
+
+				$.ajax(settings).done(function (response) {
+					data = response.data
+					const filtro = data.filter(item => item.unidade_negocio_ativo > 0)
+					$('#fk_unidade_negocio_atualizar option').remove();
+					for (let i = 0; i < filtro.length; ++i) {
+						if (dados['fk_unidade_negocio'] == filtro[i].id_unidade_negocio) {
+							$("#fk_unidade_negocio_atualizar").append("<option value=" + filtro[i].id_unidade_negocio + " selected>" + filtro[i].nome_unidade_negocio + "</option>");
+						} else {
+							$("#fk_unidade_negocio_atualizar").append("<option value=" + filtro[i].id_unidade_negocio + ">" + filtro[i].nome_unidade_negocio + "</option>");
+						}
+					}
+				});
+			});
+		}
+
+		// Função para atualizar o registro no BD
+		function atualizar() {
+			var usuario_ativo = 1
+			if ($("#usuario_ativo_atualizar").is(":checked")) {
+				usuario_ativo = 1
+			} else {
+				usuario_ativo = 0
+			}
+			var nome = $("#nome_atualizar").val();
+			var login = $("#login_atualizar").val();
+			var nivel_acesso = $("#nivel_acesso_atualizar").val();
+			var fk_unidade_negocio = $("#fk_unidade_negocio_atualizar").val();
+			var password_input = $("#password_atualizar").val();
+			var password_confirm_input = $("#password_atualizar").val();
+			var id = $("#id_atualizar").val();
+			if (password_input != '') {
+				password = password_input;
+			} else {
+				password = '';
+			}
+			var settings = {
+				"url": "http://localhost/tgi_backend/api/usuario/" + id,
+				"method": "POST",
+				"timeout": 0,
+				"headers": {
+					"token": token,
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				"data": {
+					"nome": nome,
+					"login": login,
+					"senha": password,
+					"nivel_acesso": nivel_acesso,
+					"usuario_ativo": usuario_ativo,
+					"fk_unidade_negocio": fk_unidade_negocio
+				}
+			};
+
+			$.ajax(settings).done(function (response) {
+				window.alert("Ação realizada com sucesso.")
+				window.location.reload(true) // atualiza a pagina apos atualizar um registro
+			});
+
+		}
+
+		// Função para confirmar a exclusão do registro do BD
+		function apagaModal(id) {
+			$("#modalDeletar").modal();
+			jQuery('#id_deletar').val(id);
+		}
+
+		// Função para apagar o registro no BD
+		function apagar() {
+			var confirmar = $("#confirmar").val();
+			var id = $("#id_deletar").val();
+			if (confirmar == 'CONFIRMAR') {
+				var settings = {
+					"url": "http://localhost/tgi_backend/api/usuario/" + id,
+					"method": "DELETE",
+					"timeout": 0,
+					"headers": {
+						"token": token
+					},
+				};
+				$.ajax(settings).done(function (response) {
+					window.alert("Ação realizada com sucesso.")
+				});
+			} else {
+				window.alert("Ação cancelada, confirmação não realizada.")
+			}
+		}
+
+		// Função para conferir senha utilizada pelo usuário
+		/*function confereSenha(){
+			//FUNÇÃO INATIVADA POIS NÃO ESTA VALIDANDO CORRETAMENTE
+			const senha = document.querySelector('input[name=password]');
+			const confirma = document.querySelector('input[name=password_confirm]');
+			if(confirma.value === senha.value){
+				confirma.setCustomValidity('');
+			} else {
+				confirma.setCustomValidity('As senhas não conferem');
+			}
+		}*/
+		function confereSenhaUpdate() {
+			const senha = document.querySelector('input[name=password_atualizar]');
+			const confirma = document.querySelector('input[name=password_confirm_atualizar]');
+			if (confirma.value === senha.value) {
+				confirma.setCustomValidity('');
+			} else {
+				confirma.setCustomValidity('As senhas não conferem');
+			}
+		}
+	</script>
+</body>
+
+</html>

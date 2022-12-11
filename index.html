@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+  	<head>
+		<title>Controle de Estoque</title>
+		<meta charset="utf-8">
+		<link rel="apple-touch-icon" sizes="180x180" href="./dist/img/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="./dist/img/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="./dist/img/favicon-16x16.png">
+		<link rel="manifest" href="./dist/img/site.webmanifest">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="dist/css/style.css">
+		<script src="https://use.fontawesome.com/e5cedff9d3.js"></script>
+	</head>
+	<body>
+		<div id="snackbar_error_password">Credenciais Incorretas, Tente Novamente.</div>
+		<div id="snackbar_reset_perfect">Senha redefinida, instruções enviadas para o e-mail cadastrado!</div>
+		<div id="snackbar_reset_fail">Login Incorreto e/ou Inexistente</div>
+		<section class="ftco-section">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-md-12 col-lg-12">
+						<div class="wrap d-md-flex">
+							<div class="img" style="background-image: url(dist/img/bg-1.jpg);"></div>
+							<div class="login-wrap p-4 p-md-5">
+								<div class="d-flex">
+									<div class="w-100">
+										<h3 class="mb-4">Login</h3>
+									</div>
+								</div>
+								<form action="#" class="signin-form" id="logar">
+									<div class="form-group mb-3">
+										<label class="label" for="name">Login</label>
+										<input type="text" class="form-control" id="login" placeholder="Login" required>
+									</div>
+									<div class="form-group mb-3">
+										<label class="label" for="password">Senha</label>
+										<input type="password" class="form-control" id="senha" placeholder="Senha" required>
+									</div>
+									<div class="form-group">
+										<button id="realizarLogin" class="form-control btn btn-primary rounded submit px-3">Entrar</button>
+									</div>
+									<div class="form-group text-center">
+										<a data-toggle="modal" data-target="#modalResetPassword">Esqueceu a senha?</a>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<script src="dist/js/jquery.min.js"></script>
+		<script src="dist/js/popper.js"></script>
+		<script src="dist/js/bootstrap.min.js"></script>
+		<script src="dist/js/main.js?v1"></script>
+
+		<!-- Modal Reset Password -->
+		<div class="modal fade" id="modalResetPassword" tabindex="-1" role="dialog" aria-labelledby="modalResetPasswordTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLongTitle">Recuperar Senha</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<form action="#" class="signin-form">
+						<div class="modal-body">
+							<div class="form-group mb-3">
+								<label class="label" for="name">Login</label>
+								<input type="text" class="form-control" id="loginRecuperar" placeholder="Login" required>
+							</div>
+						</div>
+					</form>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+						<button type="button" onclick="recuperarSenha()" class="btn btn-primary">Recuperar Minha Senha</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>
