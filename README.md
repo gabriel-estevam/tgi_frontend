@@ -18,7 +18,7 @@ Se o APACHE, MYSQL e as API'S estiverem configuradas corretamente será apresent
 <br>
 
 ## Interface Gráfica
-Nesse projeto utilizamos ultilizamos as tecnologias HTML5, CSS3, Javascript e Bootstrap, o sistema conta um um layout moderno e responsivo, possibilitando ser ultilizado em navegadores, smartphones e tablets.
+Nesse projeto utilizamos as tecnologias HTML5, CSS3, Javascript e Bootstrap, o sistema conta um layout moderno e responsivo, possibilitando ser ultilizado em navegadores, smartphones e tablets.
 <br>
 Para consumir as API'S no frontend utlizamos o ajax jquery.
 
